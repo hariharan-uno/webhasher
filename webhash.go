@@ -21,8 +21,6 @@ type Hasher struct {
 	Format string `schema:"format"` //format of hash (md5, sha1, sha256)
 }
 
-var hasher = new(Hasher) //Returns a pointer to a new Hasher type
-var decoder = schema.NewDecoder()
 var templates = template.Must(template.ParseFiles("index.html"))
 
 // HashHandler parses through the url values and determines the query string and
@@ -30,6 +28,8 @@ var templates = template.Must(template.ParseFiles("index.html"))
 // to the http.ResponseWriter.
 // Currently, It suports only MD5, SHA1, SHA256.
 func HashHandler(w http.ResponseWriter, r *http.Request) {
+	var hasher = new(Hasher) //Returns a pointer to a new Hasher type
+	var decoder = schema.NewDecoder()
 	err := r.ParseForm()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
