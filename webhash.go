@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/md5"
+	"crypto/sha1"
 	"fmt"
 	"github.com/gorilla/schema"
 	"io"
@@ -36,7 +37,9 @@ func MyHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "%x", h.Sum(nil))
 		return
 	case "sha1":
-		fmt.Fprintf(w, "sha1")
+		h := sha1.New()
+		io.WriteString(h, hasher.Query)
+		fmt.Fprintf(w, "%x", h.Sum(nil))
 		return
 	case "sha256":
 		fmt.Fprintf(w, "sha256")
