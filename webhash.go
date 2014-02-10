@@ -22,6 +22,7 @@ type Hasher struct {
 
 var hasher = new(Hasher) //Returns a pointer to a new Hasher type
 var decoder = schema.NewDecoder()
+var templates = template.Must(template.ParseFiles("index.html"))
 
 // HashHandler parses through the url values and determines the query string and
 // format type parameters. It checks hasher.Format and writes the corresponding hash
@@ -73,12 +74,7 @@ func InputHandler(w http.ResponseWriter, r *http.Request) {
 // renderTemplate renders the template and handles errors.
 // It takes http.Response Writer and the template filename as inputs.
 func renderTemplate(w http.ResponseWriter, tmpl string) {
-	t, err := template.ParseFiles(tmpl + ".html")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	err = t.Execute(w, "")
+	err := templates.ExecuteTemplate(w, tmpl+".html", "")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
