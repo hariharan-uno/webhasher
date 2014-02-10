@@ -18,7 +18,7 @@ type Hasher struct {
 var hasher = new(Hasher)
 var decoder = schema.NewDecoder()
 
-func MyHandler(w http.ResponseWriter, r *http.Request) {
+func HashHandler(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -76,6 +76,6 @@ Type the text you want to convert:
 
 func main() {
 	http.HandleFunc("/", InputHandler)
-	http.HandleFunc("/hash", MyHandler)
+	http.HandleFunc("/hash", HashHandler)
 	http.ListenAndServe(":8080", nil)
 }
