@@ -18,10 +18,10 @@ type Hasher struct {
 var hasher = new(Hasher) //Returns a pointer to a new Hasher type
 var decoder = schema.NewDecoder()
 
-//HashHandler parses through the url values and determines the query string and
-//format type parameters. It checks hasher.Format and writes the corresponding hash
-//to the http.ResponseWriter.
-//Currently, It suports only MD5, SHA1, SHA256.
+// HashHandler parses through the url values and determines the query string and
+// format type parameters. It checks hasher.Format and writes the corresponding hash
+// to the http.ResponseWriter.
+// Currently, It suports only MD5, SHA1, SHA256.
 func HashHandler(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
@@ -34,7 +34,7 @@ func HashHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if hasher.Query == "" || hasher.Format == "" {
-		fmt.Fprint(w, InputForm) //If the query string or format is empty, it writes the input form
+		fmt.Fprint(w, InputForm) //If the query string or format is empty, it writes the input form.
 		return
 	}
 
@@ -55,12 +55,12 @@ func HashHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "%x", h.Sum(nil))
 		return
 	default:
-		fmt.Fprintf(w, "Shit, not supported")
+		http.Redirect(w, r, "/", http.StatusFound) //If the format is not supported, redirect to the home page.
 		return
 	}
 }
 
-//InputHandler returns a HTML form for query string input and selecting hash type
+// InputHandler returns a HTML form for query string input and selecting hash type
 func InputHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, InputForm)
 }
