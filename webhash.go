@@ -5,7 +5,7 @@ import (
 	"crypto/sha1"
 	"crypto/sha256"
 	"fmt"
-	"github.com/gorilla/schema"
+	"github.com/gorilla/schema" //For populating struct with multiple url values
 	"io"
 	"net/http"
 )
@@ -15,22 +15,29 @@ type Hasher struct {
 	Format string `schema:"format"` //format of hash
 }
 
-var hasher = new(Hasher)
+var hasher = new(Hasher) //Returns a pointer to a new Hasher type
 var decoder = schema.NewDecoder()
 
+//HashHandler parses through the url values and determines the query string and
+//format type parameters. It checks hasher.Format and writes the corresponding hash
+//to the http.ResponseWriter.
+//Currently, It suports only MD5, SHA1, SHA256.
 func HashHandler(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+
 	err = decoder.Decode(hasher, r.Form)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+
 	if hasher.Query == "" || hasher.Format == "" {
-		fmt.Fprint(w, InputForm)
+		fmt.Fprint(w, InputForm) //If the query string or format is empty, it writes the input form
 		return
 	}
+
 	switch hasher.Format {
 	case "md5":
 		h := md5.New()
@@ -53,6 +60,7 @@ func HashHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+//InputHandler returns a HTML form for query string input and selecting hash type
 func InputHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, InputForm)
 }
