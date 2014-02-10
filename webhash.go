@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"crypto/md5"
 	"crypto/sha1"
 	"crypto/sha256"
@@ -73,10 +74,12 @@ func InputHandler(w http.ResponseWriter, r *http.Request) {
 // renderTemplate renders the template and handles errors.
 // It takes http.Response Writer and the template filename as inputs.
 func renderTemplate(w http.ResponseWriter, tmpl string) {
-	err := templates.ExecuteTemplate(w, tmpl+".html", "")
+	buf := new(bytes.Buffer)
+	err := templates.ExecuteTemplate(buf, tmpl+".html", "")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+	io.Copy(w, buf)
 }
 
 func main() {
