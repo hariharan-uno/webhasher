@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/md5"
 	"crypto/sha1"
+	"crypto/sha256"
 	"fmt"
 	"github.com/gorilla/schema"
 	"io"
@@ -42,7 +43,9 @@ func MyHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "%x", h.Sum(nil))
 		return
 	case "sha256":
-		fmt.Fprintf(w, "sha256")
+		h := sha256.New()
+		io.WriteString(h, hasher.Query)
+		fmt.Fprintf(w, "%x", h.Sum(nil))
 		return
 	default:
 		fmt.Fprintf(w, "Shit, not supported")
