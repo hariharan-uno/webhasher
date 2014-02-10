@@ -2,12 +2,28 @@ package main
 
 import (
 	"fmt"
+	"github.com/gorilla/schema"
 	"net/http"
 )
 
+type Hasher struct {
+	Query  string //query
+	Format string //format of hash
+}
+
+var hasher = new(Hasher)
+var decoder = schema.NewDecoder()
+
 func MyHandler(w http.ResponseWriter, r *http.Request) {
-	q := r.FormValue("q")
-	fmt.Fprintf(w, "%s", q)
+	err := r.ParseForm()
+	if err != nil {
+		panic(err)
+	}
+	err = decoder.Decode(hasher, r.Form)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Fprintf(w, "<html>"+"Query: %s"+"<br>"+"Format: %s"+"</html>", hasher.Query, hasher.Format)
 }
 
 func InputHandler(w http.ResponseWriter, r *http.Request) {
@@ -19,8 +35,14 @@ const InputForm = `<html>
 <form method="GET" action="/hash">
 <label>
 Type the text you want to convert: 
-<input type="text" name="q" />
+<input type="text" name="Query" />
 </label>
+<select name="Format">
+<option value="md5">MD5</option>
+<option value="sha1">SHA1</option>
+<option value="sha256">SHA256</option>
+</select>
+<button type="submit">Go</button>
 </form>
 </body>
 </html>`
