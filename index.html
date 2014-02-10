@@ -1,0 +1,44 @@
+<html>
+  <head>
+    <title>Go Web Hash</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style type="text/css">
+      .prettybox { 
+      border: 1px solid #d9d9d9; 
+      color: #737373; 
+      padding: 7px; 
+      width: 310px; 
+      cursor: auto; 
+      }
+      .lato {
+      font-family: Lato;
+      }
+      .prettypad {
+      padding: 7px;
+      }
+      .prettybtn {
+      cursor:pointer;
+      }
+    </style>
+    <!-- Lato font -->
+    <link href="http://fonts.googleapis.com/css?family=Lato:400" rel="stylesheet" type="text/css">
+  </head>
+  <body class="lato">
+    <div class="container" style="margin-top:5%;margin-left:5%"> 
+      <form method="GET" action="/hash">
+	<label>
+	  Type the text you want to convert: 
+	  <input type="text" class="prettybox lato" name="q" />
+	</label>
+	<select name="format" class="lato prettypad">
+	  <option value="md5">MD5</option>
+	  <option value="sha1">SHA1</option>
+	  <option value="sha256">SHA256</option>
+	</select>
+	<button type="submit" class="lato prettypad prettybtn">Go</button>
+      </form>
+    </div>
+    <script src="https://code.jquery.com/jquery.js"></script>
+    <script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+  </body>
+</html>
