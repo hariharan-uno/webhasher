@@ -6,6 +6,7 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"github.com/gorilla/schema" //For populating struct with multiple url values
+	"html/template"
 	"io"
 	"net/http"
 )
@@ -38,7 +39,7 @@ func HashHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if hasher.Query == "" || hasher.Format == "" {
-		fmt.Fprint(w, InputForm) //If the query string or format is empty, it writes the input form.
+		http.Redirect(w, r, "/", http.StatusFound) //If the query or the format is empty, redirect to the home page.
 		return
 	}
 
@@ -66,25 +67,22 @@ func HashHandler(w http.ResponseWriter, r *http.Request) {
 
 // InputHandler returns a HTML form for query string input and selecting hash type
 func InputHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, InputForm)
+	renderTemplate(w, "index")
 }
 
-const InputForm = `<html>
-<body>
-<form method="GET" action="/hash">
-<label>
-Type the text you want to convert: 
-<input type="text" name="q" />
-</label>
-<select name="format">
-<option value="md5">MD5</option>
-<option value="sha1">SHA1</option>
-<option value="sha256">SHA256</option>
-</select>
-<button type="submit">Go</button>
-</form>
-</body>
-</html>`
+// renderTemplate renders the template and handles errors.
+// It takes http.Response Writer and the template filename as inputs.
+func renderTemplate(w http.ResponseWriter, tmpl string) {
+	t, err := template.ParseFiles(tmpl + ".html")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	err = t.Execute(w, "")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
 
 func main() {
 	http.HandleFunc("/", InputHandler)
