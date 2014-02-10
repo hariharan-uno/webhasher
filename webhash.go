@@ -1,8 +1,10 @@
 package main
 
 import (
+	"crypto/md5"
 	"fmt"
 	"github.com/gorilla/schema"
+	"io"
 	"net/http"
 )
 
@@ -17,13 +19,32 @@ var decoder = schema.NewDecoder()
 func MyHandler(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
-		panic(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 	err = decoder.Decode(hasher, r.Form)
 	if err != nil {
-		panic(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
-	fmt.Fprintf(w, "<html>"+"Query: %s"+"<br>"+"Format: %s"+"</html>", hasher.Query, hasher.Format)
+	if hasher.Query == "" || hasher.Format == "" {
+		fmt.Fprint(w, InputForm)
+		return
+	}
+	switch hasher.Format {
+	case "md5":
+		h := md5.New()
+		io.WriteString(h, hasher.Query)
+		fmt.Fprintf(w, "%x", h.Sum(nil))
+		return
+	case "sha1":
+		fmt.Fprintf(w, "sha1")
+		return
+	case "sha256":
+		fmt.Fprintf(w, "sha256")
+		return
+	default:
+		fmt.Fprintf(w, "Shit, not supported")
+		return
+	}
 }
 
 func InputHandler(w http.ResponseWriter, r *http.Request) {
