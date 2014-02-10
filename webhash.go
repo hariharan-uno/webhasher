@@ -10,9 +10,13 @@ import (
 	"net/http"
 )
 
+// Hasher type contains the multiple url values, Query and Format.
+// Currently the formats supported are only md5, sha1, sha256.
+//
+// IMPORTANT: Make sure that fields are exported, i.e. Capitalized first letters.
 type Hasher struct {
 	Query  string `schema:"q"`      //query
-	Format string `schema:"format"` //format of hash
+	Format string `schema:"format"` //format of hash (md5, sha1, sha256)
 }
 
 var hasher = new(Hasher) //Returns a pointer to a new Hasher type
