@@ -7,8 +7,8 @@ import (
 )
 
 type Hasher struct {
-	Query  string //query
-	Format string //format of hash
+	Query  string `schema:"q"`      //query
+	Format string `schema:"format"` //format of hash
 }
 
 var hasher = new(Hasher)
@@ -35,9 +35,9 @@ const InputForm = `<html>
 <form method="GET" action="/hash">
 <label>
 Type the text you want to convert: 
-<input type="text" name="Query" />
+<input type="text" name="q" />
 </label>
-<select name="Format">
+<select name="format">
 <option value="md5">MD5</option>
 <option value="sha1">SHA1</option>
 <option value="sha256">SHA256</option>
