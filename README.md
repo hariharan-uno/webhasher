@@ -1,5 +1,7 @@
-Go-Web-Hash
+Web Hasher
 -----------
+
+View demo at http://webhasher.appspot.com
 
 Web interface for generating common crypto hashes, written in Go.
 
