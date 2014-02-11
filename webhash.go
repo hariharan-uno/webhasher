@@ -84,8 +84,7 @@ func renderTemplate(w http.ResponseWriter, tmpl string) {
 	io.Copy(w, buf)
 }
 
-func main() {
+func init() {
 	http.HandleFunc("/", InputHandler)
 	http.HandleFunc("/hash", HashHandler)
-	http.ListenAndServe(":8080", nil)
 }
