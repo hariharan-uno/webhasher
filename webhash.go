@@ -44,6 +44,7 @@ func HashHandler(w http.ResponseWriter, r *http.Request) {
 
 	if hasher.Query == "" || hasher.Format == "" {
 		http.Redirect(w, r, "/", http.StatusFound) //If the query or the format is empty, redirect to the home page.
+		return
 	}
 
 	switch hasher.Format {
@@ -80,6 +81,7 @@ func renderTemplate(w http.ResponseWriter, tmpl string) {
 	err := templates.ExecuteTemplate(buf, tmpl+".html", "")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 	io.Copy(w, buf)
 }
