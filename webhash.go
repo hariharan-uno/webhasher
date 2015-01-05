@@ -6,19 +6,18 @@ import (
 	"crypto/sha1"
 	"crypto/sha256"
 	"fmt"
-	"github.com/gorilla/schema" //For populating struct with multiple url values
 	"html/template"
 	"io"
 	"net/http"
+
+	"github.com/gorilla/schema"
 )
 
 // Hasher type contains the multiple url values, Query and Format.
-// Currently the formats supported are only md5, sha1, sha256.
-//
-// IMPORTANT: Make sure that fields are exported, i.e. Capitalized first letters.
+// Make sure that fields are exported, i.e. capitalized first letters.
 type Hasher struct {
-	Query  string `schema:"q"`      //query
-	Format string `schema:"format"` //format of hash (md5, sha1, sha256)
+	Query  string `schema:"q"`
+	Format string `schema:"format"` // format of hash e.g. md5, sha1, etc.
 }
 
 var templates = template.Must(template.ParseFiles("index.html"))
@@ -28,22 +27,22 @@ var templates = template.Must(template.ParseFiles("index.html"))
 // to the http.ResponseWriter.
 // Currently, It suports only MD5, SHA1, SHA256.
 func HashHandler(w http.ResponseWriter, r *http.Request) {
-	var hasher = new(Hasher) //Returns a pointer to a new Hasher type
-	var decoder = schema.NewDecoder()
-	err := r.ParseForm()
-	if err != nil {
+	hasher := new(Hasher)
+	decoder := schema.NewDecoder()
+
+	if err := r.ParseForm(); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	err = decoder.Decode(hasher, r.Form)
-	if err != nil {
+	if err := decoder.Decode(hasher, r.Form); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	if hasher.Query == "" || hasher.Format == "" {
-		http.Redirect(w, r, "/", http.StatusFound) //If the query or the format is empty, redirect to the home page.
+		// If the query or the format is empty, redirect to the home page.
+		http.Redirect(w, r, "/", http.StatusFound)
 		return
 	}
 
@@ -64,18 +63,18 @@ func HashHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "%x", h.Sum(nil))
 		return
 	default:
-		http.Redirect(w, r, "/", http.StatusFound) //If the format is not supported, redirect to the home page.
+		// If the format is not supported, redirect to the home page.
+		http.Redirect(w, r, "/", http.StatusFound)
 		return
 	}
 }
 
-// InputHandler returns a HTML form for query string input and selecting hash type
+// InputHandler returns a HTML form for input.
 func InputHandler(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "index")
 }
 
 // renderTemplate renders the template and handles errors.
-// It takes http.Response Writer and the template filename as inputs.
 func renderTemplate(w http.ResponseWriter, tmpl string) {
 	buf := new(bytes.Buffer)
 	err := templates.ExecuteTemplate(buf, tmpl+".html", "")
